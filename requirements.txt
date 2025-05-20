@@ -1,0 +1,28 @@
+# Core dependencies
+dagster>=1.6.0
+dagster-webserver>=1.6.0
+dagit>=1.6.0
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+scikit-learn>=1.3.0
+
+# LakeFS integration
+lakefs-spec>=0.2.0
+python-lakefs>=0.1.0
+
+# MLflow for experiment tracking
+mlflow>=2.8.0  
+
+# Testing and code quality
+pytest>=7.4.0
+ruff>=0.1.0
+pyright>=1.1.0
+
+# Docker management
+python-dotenv>=1.0.0
+
+# Other ML dependencies (add based on your specific model needs)
+matplotlib>=3.7.0
+seaborn>=0.12.0
