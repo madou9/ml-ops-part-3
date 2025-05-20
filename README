@@ -1,0 +1,78 @@
+# Part 3: From Notebook to MLOps Pipeline
+
+Welcome to Part 3 of the Machine Learning module. In the previous parts, you built regression and classification models using Jupyter notebooks, learned data preprocessing, model training, and performance evaluation using standard machine learning workflows.
+
+In this part, we transition from exploratory notebooks to production-ready MLOps pipelines. You will convert your existing ML workflow into an automated, scalable, and maintainable pipeline using industry-standard tools and best practices.
+
+---
+
+## Objective
+
+Convert your existing model training notebook (from Part 1 or Part 2) into a fully automated machine learning pipeline by:
+
+- Building the pipeline with **Dagster**
+- Versioning data with **LakeFS**
+- Applying professional software engineering practices to ensure reproducibility and robustness
+
+---
+
+## Tools & Technologies
+
+- **Dagster:** Orchestration platform for defining and running data workflows
+- **LakeFS:** Git-like data versioning system
+- **lakefs-spec:** Python library to interact with LakeFS
+- **Ruff and Pyright (via Pylance in VSCode):** Code formatting, linting, and type checking
+- **GitHub:** Version control system
+
+---
+
+## Task Overview
+
+### 1. Project Structure
+
+Organize your project as a Python package:
+
+
+- Use type hints consistently
+- Document functions and modules with a consistent style (e.g., NumPy or Google docstrings)
+
+### 2. Build the Pipeline with Dagster
+
+- Define Dagster assets for each step: data loading, preprocessing, training, evaluation
+- Create custom Resources for external services (e.g., MLflow)
+- Build custom IOManagers to load and save data (start with local disk, then migrate to remote)
+- Make the pipeline configurable
+
+### 3. Integrate LakeFS for Data Versioning
+
+- Deploy a local LakeFS instance using Docker
+- Use `lakefs-spec` to interface your pipeline with versioned datasets
+- Design and implement data versioning strategies with LakeFS
+
+### 4. Automate Pipeline Execution with Sensors
+
+- Implement a Dagster Sensor to watch LakeFS for new data
+- Automatically trigger pipeline runs on data changes
+- Simulate data changes by splitting datasets (e.g., Bike Sharing dataset by year)
+
+### 5. Testing and Best Practices
+
+- Write unit tests for core functions using Pytest
+- Configure Ruff and Pyright for linting and static type checking
+- Commit code regularly to a GitHub repository with clear documentation
+
+---
+
+## Outcome
+
+By completing this part, you will have transformed your machine learning notebook into a professional MLOps pipeline that is:
+
+- Automated and reproducible
+- Data-versioned with LakeFS
+- Tested and maintainable
+
+This foundation enables scalable, collaborative machine learning workflows suitable for production environments.
+
+---
+
+## Let’s get building!
