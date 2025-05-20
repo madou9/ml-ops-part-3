@@ -1,0 +1,58 @@
+version: '3'
+
+services:
+  # Dagster service
+  dagster:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"  # Dagster UI
+    volumes:
+      - ./:/app
+    environment:
+      - DAGSTER_HOME=/app/dagster_home
+    depends_on:
+      - postgres
+      - lakefs
+
+  # PostgreSQL for Dagster storage
+  postgres:
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=dagster
+      - POSTGRES_PASSWORD=dagster
+      - POSTGRES_DB=dagster
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # LakeFS for data versioning
+  lakefs:
+    image: treeverse/lakefs:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - LAKEFS_DATABASE_TYPE=local
+      - LAKEFS_AUTH_UI_ENABLED=true
+      - LAKEFS_BLOCKSTORE_TYPE=local
+      - LAKEFS_BLOCKSTORE_LOCAL_PATH=/home/lakefs/data
+    volumes:
+      - lakefs_data:/home/lakefs/data
+      - lakefs_metadata:/home/lakefs/metadata
+
+  # MLflow tracking server (optional but recommended)
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:latest
+    ports:
+      - "5000:5000"
+    command: mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///mlflow.db
+    volumes:
+      - mlflow_data:/mlflow
+
+volumes:
+  postgres_data:
+  lakefs_data:
+  lakefs_metadata:
+  mlflow_data:
