@@ -25,4 +25,4 @@ COPY . .
 RUN echo "telemetry:\n  enabled: false" > $DAGSTER_HOME/dagster.yaml
 
 # Start the Dagster UI
-CMD ["dagster", "dev"]
+CMD ["dagster", "dev", "-m", "ml_pipeline", "-h", "0.0.0.0"]
