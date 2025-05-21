@@ -7,11 +7,15 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"  # Dagster UI
+      - "3000:3000"
     volumes:
       - ./:/app
     environment:
       - DAGSTER_HOME=/app/dagster_home
+    command: >
+      dagster dev
+      -m ml_pipeline 
+      -h 0.0.0.0
     depends_on:
       - postgres
       - lakefs
@@ -31,16 +35,19 @@ services:
   # LakeFS for data versioning
   lakefs:
     image: treeverse/lakefs:latest
+    user: "1000:1000"
     ports:
       - "8000:8000"
     environment:
       - LAKEFS_DATABASE_TYPE=local
-      - LAKEFS_AUTH_UI_ENABLED=true
+      - LAKEFS_AUTH_ENCRYPT_SECRET_KEY=${LAKEFS_AUTH_ENCRYPT_SECRET_KEY}
+      - LAKEFS_AUTH_ENCRYPT_SECRET_KEY_VERSION=1
       - LAKEFS_BLOCKSTORE_TYPE=local
-      - LAKEFS_BLOCKSTORE_LOCAL_PATH=/home/lakefs/data
+      - LAKEFS_BLOCKSTORE_LOCAL_PATH=/lakefs/data
+      - LAKEFS_LOCAL_METADATA_PATH=/lakefs/metadata
     volumes:
-      - lakefs_data:/home/lakefs/data
-      - lakefs_metadata:/home/lakefs/metadata
+      - ./lakefs_data:/lakefs/data
+      - ./lakefs_metadata:/lakefs/metadata
 
   # MLflow tracking server
   mlflow:
