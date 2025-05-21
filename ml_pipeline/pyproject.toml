@@ -1,35 +1,18 @@
-build-system]
-requires = ["setuptools>=61.0.0", "wheel"]
-build-backend = "setuptools.build_meta"
-
-[project]
+project]
 name = "ml_pipeline"
 version = "0.1.0"
 description = "MLOps pipeline with Dagster and LakeFS"
 requires-python = ">=3.10"
-readme = "README.md"
-authors = [
-    {name = "Hama"}
-]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 packages = ["ml_pipeline"]
 
-[tool.ruff]
-line-length = 100
-target-version = "py310"
-select = ["E", "F", "I", "UP", "N", "ANN", "B", "C4", "PIE", "PYI", "RET", "SIM", "W"]
-ignore = ["ANN101", "ANN102", "ANN401"]  # Ignore some type annotation rules for now
-
-[tool.ruff.isort]
-known-first-party = ["ml_pipeline"]
-
-[tool.pyright]
-include = ["ml_pipeline"]
-exclude = ["**/node_modules", "**/__pycache__"]
-reportMissingImports = true
-reportMissingTypeStubs = false
-pythonVersion = "3.10"
+[tool.dagster]
+module_name = "ml_pipeline"  # Points to your __init__.py
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
