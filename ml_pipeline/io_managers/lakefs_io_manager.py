@@ -1,13 +1,8 @@
-# ml_pipeline/io_managers/lakefs_io_manager.py
 import pandas as pd
 import os
-from typing import Any
-from dagster import IOManager, InputContext, OutputContext, io_manager, Field
+from dagster import IOManager, io_manager, Field
 import lakefs_sdk
 from lakefs_sdk.client import LakeFSClient
-from lakefs_sdk.models import ObjectStats
-import tempfile
-import os
 
 
 class LakeFSIOManager(IOManager):
