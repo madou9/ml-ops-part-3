@@ -10,8 +10,15 @@ services:
       - "3000:3000"
     volumes:
       - ./:/app
+      - dagster_home:/app/dagster_home  # Use named volume for dagster_home
     environment:
       - DAGSTER_HOME=/app/dagster_home
+      - LAKEFS_ENDPOINT_URL=${LAKEFS_ENDPOINT_URL}
+      - LAKEFS_ACCESS_KEY_ID=${LAKEFS_ACCESS_KEY_ID}
+      - LAKEFS_SECRET_ACCESS_KEY=${LAKEFS_SECRET_ACCESS_KEY}
+      - LAKEFS_REPOSITORY=${LAKEFS_REPOSITORY}
+      - LAKEFS_BRANCH=${LAKEFS_BRANCH}
+      - CSV_FILE_PATH=${CSV_FILE_PATH}
     command: >
       dagster dev
       -m ml_pipeline 
@@ -26,9 +33,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=dagster
+      - POSTGRES_PASSWORD=dagster_password
+      - POSTGRES_DB=dagster_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -40,11 +47,13 @@ services:
       - "8000:8000"
     environment:
       - LAKEFS_DATABASE_TYPE=local
-      - LAKEFS_AUTH_ENCRYPT_SECRET_KEY=${LAKEFS_AUTH_ENCRYPT_SECRET_KEY}
+      - LAKEFS_AUTH_ENCRYPT_SECRET_KEY=some_fixed_secret_key_for_development
       - LAKEFS_AUTH_ENCRYPT_SECRET_KEY_VERSION=1
       - LAKEFS_BLOCKSTORE_TYPE=local
       - LAKEFS_BLOCKSTORE_LOCAL_PATH=/lakefs/data
       - LAKEFS_LOCAL_METADATA_PATH=/lakefs/metadata
+      - LAKEFS_ACCESS_KEY_ID=${LAKEFS_ACCESS_KEY_ID}
+      - LAKEFS_SECRET_ACCESS_KEY=${LAKEFS_SECRET_ACCESS_KEY}
     volumes:
       - ./lakefs_data:/lakefs/data
       - ./lakefs_metadata:/lakefs/metadata
@@ -63,3 +72,4 @@ volumes:
   lakefs_data:
   lakefs_metadata:
   mlflow_data:
+  dagster_home:  # Add named volume for dagster_home
