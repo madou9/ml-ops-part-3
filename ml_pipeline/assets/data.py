@@ -8,6 +8,8 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
+import mlflow
+import mlflow.sklearn 
 
 class DataConfig(Config):
     csv_file_path: str = "ml_pipeline/assets/spotify_data.csv"
@@ -46,22 +48,45 @@ def features(processed_data: pd.DataFrame) -> pd.DataFrame:
         'acousticness', 'energy', 'valence', 'speechiness'
     ]
     CATEGORICAL_FEATURES = ['year']
+    TARGET = 'is_popular'
     FEATURES = NUMERIC_FEATURES + CATEGORICAL_FEATURES
-    return processed_data[FEATURES]
+    return processed_data[FEATURES + [TARGET]]
 
-@asset(io_manager_key="lakefs_io_manager")
-def target(processed_data: pd.DataFrame) -> pd.Series:
+
+@asset(io_manager_key="lakefs_io_manager", required_resource_keys={"mlflow"})
+def train_with_mlflow(context, features: pd.DataFrame) -> None:
     """
-    Create target variable from processed data.
-    This asset extracts the target variable 'is_popular' from the processed data.
+    Train a logistic regression model using MLflow and log the results.
     """
-    return processed_data['is_popular']
+    from sklearn.model_selection import train_test_split
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.metrics import accuracy_score
 
-    
+    X = features.drop(columns=["is_popular"])
+    y = features["is_popular"]
 
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    with mlflow.start_run():
+        model = LogisticRegression(class_weight='balanced', max_iter=1000, random_state=42)
+        model.fit(X_train, y_train)
+        y_pred = model.predict(X_test)
+        acc = accuracy_score(y_test, y_pred)
+        context.log.info(f"Run ID: {mlflow.active_run().info.run_id}")
+        context.log.info(f"experiment ID: {mlflow.active_run().info.experiment_id}")
+        context.log.info(f"experiment Name: {mlflow.get_experiment(mlflow.active_run().info.experiment_id).name}")
+        context.log.info(f"mlflow host: {mlflow.get_tracking_uri()}")
+
+        mlflow.log_param("model_type", "LogisticRegression")
+        mlflow.log_metric("accuracy", acc)
+        mlflow.sklearn.log_model(model, "model")
+        mlfow.sklearn.autolog()
+        print(f"Logged model with accuracy: {acc}")
+
+# Add to your assets list
 assets = [
     raw_data,
     processed_data,
     features,
-    target,
+    train_with_mlflow,
 ]
